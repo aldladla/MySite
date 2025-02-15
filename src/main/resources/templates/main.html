@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strona główna</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            overflow: hidden;
+        }
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .navbar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 100%;
+            background-color: #111;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: start;
+            padding-top: 20px;
+            z-index: 100;
+        }
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px;
+            margin: 8px 0;
+            width: 90%;
+            text-align: center;
+            border-radius: 0px;
+            display: block;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+        }
+        .navbar a:hover {
+            background-color: #575757;
+            outline: 2px solid #0F0;
+            outline-offset: -2px;
+        }
+        h1 {
+            background-color: #333;
+            padding: 30px;
+            border-radius: 10px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 24px;
+            animation: fadeIn 2s ease-in-out;
+            margin-right: 220px;
+            margin-left: 20px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0.8;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Kwadrat z tekstem */
+        .quote-box {
+            position: absolute;
+            top: 225px;
+            right: 580px;
+            width: 40%;
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 2px solid #0F0;
+            border-radius: 10px;
+            padding: 20px;
+            color: #fff;
+            font-family: 'Lora', serif;
+            font-size: 14px;
+        }
+
+        .quote-box2 {
+            position: absolute;
+            top: 510px; /* Pozycja poniżej pierwszego quote-box */
+            right: 580px;
+            width: 40%;
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 2px solid #0F0;
+            border-radius: 10px;
+            padding: 20px;
+            color: #fff;
+            font-family: 'Lora', serif;
+            font-size: 14px;
+        }
+
+        /* Miejsce na zdjęcie */
+        .photo-placeholder {
+            position: absolute;
+            top: 150px;
+            left: 70px;
+            width: 20%;
+            height: 250px;
+            background-color: #222;
+            border: 2px solid #fff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .photo-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .photo-placeholder2 {
+            position: absolute;
+            top: 470px;
+            left: 70px;
+            width: 20%;
+            height: 210px;
+            background-color: #222;
+            border: 2px solid #fff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .photo-placeholder2 img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+<canvas id="matrixCanvas"></canvas>
+
+<div class="navbar">
+    <a href="/main">Strona główna</a>
+    <a href="/projekty">Projekty</a>
+    <a href="/omnie">O mnie</a>
+    <a href="/kontakt">Kontakt</a>
+</div>
+
+<h1>Witaj na mojej stronie!</h1>
+
+<!-- Kwadrat z tekstem -->
+<div class="quote-box">
+    <p>"Our greatest glory is not in never falling, but in rising every time we fall."</p>
+    <p>- Ralph Waldo Emerson</p>
+</div>
+
+<div class="quote-box2">
+    <p>“Sometimes people don't want to hear the truth because they don't want their illusions destroyed.”</p>
+    <p>- Friedrich Nietzsche</p>
+</div>
+
+<
+
+<!-- Miejsce na zdjęcie -->
+<div class="photo-placeholder">
+    <img src="/RalphEmerson.jpeg" alt="Ralph Waldo Emerson" style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px; background-color: #000;">
+</div>
+
+<div class="photo-placeholder2">
+    <img src="/Nietzsche.jpg" alt="Nietzsche" style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px; background-color: #000;">
+</div>
+
+
+<script>
+    const canvas = document.getElementById('matrixCanvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const letters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const fontSize = 16;
+    const columns = canvas.width / fontSize;
+
+    const drops = Array.from({ length: columns }).fill(1);
+
+    function draw() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#0F0';
+        ctx.font = fontSize + 'px monospace';
+
+        drops.forEach((y, index) => {
+            const text = letters[Math.floor(Math.random() * letters.length)];
+            const x = index * fontSize;
+            ctx.fillText(text, x, y * fontSize);
+
+            if (y * fontSize > canvas.height && Math.random() > 0.975) {
+                drops[index] = 0;
+            }
+            drops[index]++;
+        });
+    }
+
+    setInterval(draw, 50);
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        drops.length = canvas.width / fontSize;
+        drops.fill(1);
+    });
+</script>
+</body>
+</html>
