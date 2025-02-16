@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Logowanie / Rejestracja</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            background-color: #000;
+            overflow: hidden;
+            font-family: 'Press Start 2P', cursive;
+        }
+        /* Styl matrixowego przycisku */
+        .matrix-button {
+            background-color: transparent;
+            border: 2px solid #0F0;
+            color: #0F0;
+            padding: 10px 20px;
+            font-family: 'Press Start 2P', cursive;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .matrix-button:hover {
+            background-color: rgba(0, 255, 0, 0.1);
+            transform: scale(1.05);
+            animation: neonGlow 1s infinite;
+        }
+        .matrix-button:active {
+            transform: scale(0.95);
+        }
+        @keyframes neonGlow {
+            0%, 100% {
+                box-shadow: 0 0 5px #0F0, 0 0 10px #0F0, 0 0 20px #0F0, 0 0 30px #0F0;
+            }
+            50% {
+                box-shadow: 0 0 10px #0F0, 0 0 20px #0F0, 0 0 30px #0F0, 0 0 40px #0F0;
+            }
+        }
+        /* Canvas z animacją Matrix */
+        #matrixCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        /* Kontener formularzy */
+        .auth-box {
+            position: relative;
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #0F0;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            width: 300px;
+            margin: 100px auto;
+        }
+        .auth-box h2 {
+            color: #0F0;
+        }
+        input {
+            background: #000;
+            border: 2px solid #0F0;
+            color: #0F0;
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            font-family: 'Press Start 2P', cursive;
+        }
+        .toggle-button {
+            margin-top: 10px;
+            background: none;
+            border: none;
+            color: #0F0;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .hidden {
+            display: none;
+        }
+        .message {
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+<canvas id="matrixCanvas"></canvas>
+
+<!-- Formularz logowania – domyślnie widoczny, chyba że parametr register=true -->
+<div id="loginBox" class="auth-box" th:classappend="${param.register}=='true' ? ' hidden' : ''">
+    <h2>Logowanie</h2>
+    <form th:action="@{/login}" method="post">
+        <input type="text" name="username" placeholder="Nazwa użytkownika" required>
+        <input type="password" name="password" placeholder="Hasło" required>
+        <!-- Przyciski logowania z matrixowym stylem -->
+        <button type="submit" class="matrix-button">Zaloguj</button>
+    </form>
+    <button class="toggle-button" onclick="toggleForms()">Nie masz konta? Zarejestruj się</button>
+    <div class="message error" th:if="${param.error} == 'true'">Błędne dane logowania!</div>
+</div>
+
+<!-- Formularz rejestracji – widoczny, gdy parametr register=true -->
+<div id="registerBox" class="auth-box" th:classappend="${param.register}=='true' ? '' : ' hidden'">
+    <h2>Rejestracja</h2>
+    <form th:action="@{/register}" method="post">
+        <input type="text" name="username" placeholder="Nazwa użytkownika" required>
+        <input type="password" name="password" placeholder="Hasło" required>
+        <!-- Przyciski rejestracji z matrixowym stylem -->
+        <button type="submit" class="matrix-button">Zarejestruj się</button>
+    </form>
+    <button class="toggle-button" onclick="toggleForms()">Masz już konto? Zaloguj się</button>
+    <div class="message error" th:if="${param.error}"></div>
+    <div class="message success" th:if="${param.success}"></div>
+</div>
+
+<script>
+    // Canvas z animacją Matrix
+    const canvas = document.getElementById('matrixCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const letters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const fontSize = 16;
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops = Array.from({length: columns}).fill(1);
+
+    function draw() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#0F0';
+        ctx.font = fontSize + 'px monospace';
+
+        for (let i = 0; i < drops.length; i++) {
+            const text = letters[Math.floor(Math.random() * letters.length)];
+            const x = i * fontSize;
+            const y = drops[i] * fontSize;
+            ctx.fillText(text, x, y);
+            if (y > canvas.height && Math.random() > 0.975) {
+                drops[i] = 0;
+            }
+            drops[i]++;
+        }
+    }
+
+    setInterval(draw, 50);
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const cols = Math.floor(canvas.width / fontSize);
+        drops.length = cols;
+        drops.fill(1);
+    });
+
+    // Funkcja przełączająca widoki formularzy
+    function toggleForms() {
+        const loginBox = document.getElementById('loginBox');
+        const registerBox = document.getElementById('registerBox');
+        loginBox.classList.toggle('hidden');
+        registerBox.classList.toggle('hidden');
+    }
+</script>
+</body>
+</html>
