@@ -6,15 +6,15 @@
     <title>Strona główna</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap" rel="stylesheet">
-
     <style>
         body {
             margin: 0;
             font-family: Arial, sans-serif;
             background-color: #000;
             color: #fff;
-            overflow: hidden;
+            overflow-x: hidden;
         }
+        /* Tło Matrix */
         canvas {
             position: fixed;
             top: 0;
@@ -33,8 +33,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: start;
             padding-top: 20px;
+            transition: all 0.3s ease;
             z-index: 100;
         }
         .navbar a {
@@ -44,114 +44,71 @@
             margin: 8px 0;
             width: 90%;
             text-align: center;
-            border-radius: 0px;
-            display: block;
             font-family: 'Press Start 2P', cursive;
             font-size: 12px;
+            transition: background 0.2s;
         }
         .navbar a:hover {
             background-color: #575757;
-            outline: 2px solid #0F0;
-            outline-offset: -2px;
+            box-shadow: 0 0 10px #0F0;
         }
+        /* Nagłówek z efektem maszyny do pisania */
         h1 {
             background-color: #333;
-            padding: 30px;
+            padding: 25px;
             border-radius: 10px;
             font-family: 'Press Start 2P', cursive;
             font-size: 24px;
-            animation: fadeIn 2s ease-in-out;
             margin-right: 220px;
             margin-left: 20px;
+            margin-top: 20px;
         }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0.8;
-            }
-            to {
-                opacity: 1;
-            }
+        /* Kontener główny dla sekcji (zdjęcie + cytat) */
+        .content-container {
+            margin: 20px 220px 20px 20px;
+            max-width: 1100px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
         }
-
-        /* Kwadrat z tekstem */
+        /* Każda sekcja (zdjęcie + cytat) */
+        .section {
+            display: flex;
+            flex-wrap: wrap;
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 2px solid #0F0;
+            border-radius: 10px;
+            padding: 20px;
+            gap: 20px;
+        }
+        /* Zdjęcie */
+        .photo-box {
+            flex: 0 0 30%;
+            max-width: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .photo-box img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        /* Cytat – teraz będzie animowany efekt typewriter */
         .quote-box {
-            position: absolute;
-            top: 225px;
-            right: 580px;
-            width: 40%;
-            background-color: rgba(0, 0, 0, 0.8);
-            border: 2px solid #0F0;
-            border-radius: 10px;
-            padding: 20px;
-            color: #fff;
+            flex: 1 1 auto;
             font-family: 'Lora', serif;
-            font-size: 14px;
-        }
-
-        .quote-box2 {
-            position: absolute;
-            top: 510px; /* Pozycja poniżej pierwszego quote-box */
-            right: 580px;
-            width: 40%;
-            background-color: rgba(0, 0, 0, 0.8);
-            border: 2px solid #0F0;
-            border-radius: 10px;
-            padding: 20px;
+            font-size: 15px;
             color: #fff;
-            font-family: 'Lora', serif;
-            font-size: 14px;
-        }
-
-        /* Miejsce na zdjęcie */
-        .photo-placeholder {
-            position: absolute;
-            top: 150px;
-            left: 70px;
-            width: 20%;
-            height: 250px;
-            background-color: #222;
-            border: 2px solid #fff;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            /* Na początku ukryjemy tekst, a następnie go wypełnimy animacją */
             overflow: hidden;
+            white-space: pre-wrap;
         }
-
-        .photo-placeholder img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 10px;
-        }
-
-        .photo-placeholder2 {
-            position: absolute;
-            top: 470px;
-            left: 70px;
-            width: 20%;
-            height: 210px;
-            background-color: #222;
-            border: 2px solid #fff;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .photo-placeholder2 img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 10px;
-        }
-
     </style>
 </head>
 <body>
-
 <canvas id="matrixCanvas"></canvas>
 
 <div class="navbar">
@@ -161,32 +118,68 @@
     <a href="/kontakt">Kontakt</a>
 </div>
 
-<h1>Witaj na mojej stronie!</h1>
+<!-- Nagłówek z efektem maszyny do pisania -->
+<h1 id="typewriter"></h1>
 
-<!-- Kwadrat z tekstem -->
-<div class="quote-box">
-    <p>"Our greatest glory is not in never falling, but in rising every time we fall."</p>
-    <p>- Ralph Waldo Emerson</p>
+<!-- Główny kontener na sekcje (zdjęcie + cytat) -->
+<div class="content-container">
+    <!-- Sekcja 1: Emerson -->
+    <div class="section">
+        <div class="photo-box">
+            <img src="/RalphEmerson.jpeg" alt="Ralph Waldo Emerson">
+        </div>
+        <div class="quote-box" data-fulltext="&quot;Our greatest glory is not in never falling, but in rising every time we fall.&quot;
+- Ralph Waldo Emerson">
+            <!-- Pusta zawartość, która zostanie uzupełniona efektem typewriter -->
+        </div>
+    </div>
+    <!-- Sekcja 2: Nietzsche -->
+    <div class="section">
+        <div class="photo-box">
+            <img src="/Nietzsche.jpg" alt="Friedrich Nietzsche">
+        </div>
+        <div class="quote-box" data-fulltext="&quot;Sometimes people don't want to hear the truth because they don't want their illusions destroyed.&quot;
+- Friedrich Nietzsche">
+        </div>
+    </div>
 </div>
-
-<div class="quote-box2">
-    <p>“Sometimes people don't want to hear the truth because they don't want their illusions destroyed.”</p>
-    <p>- Friedrich Nietzsche</p>
-</div>
-
-<
-
-<!-- Miejsce na zdjęcie -->
-<div class="photo-placeholder">
-    <img src="/RalphEmerson.jpeg" alt="Ralph Waldo Emerson" style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px; background-color: #000;">
-</div>
-
-<div class="photo-placeholder2">
-    <img src="/Nietzsche.jpg" alt="Nietzsche" style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px; background-color: #000;">
-</div>
-
 
 <script>
+    // Efekt maszyny do pisania dla nagłówka
+    const header = document.getElementById("typewriter");
+    const headerText = "Witaj na mojej stronie!";
+    let headerIndex = 0;
+    function typeWriterHeader() {
+        if (headerIndex < headerText.length) {
+            header.innerHTML += headerText.charAt(headerIndex);
+            headerIndex++;
+            setTimeout(typeWriterHeader, 100);
+        }
+    }
+    window.onload = typeWriterHeader;
+
+    // Efekt maszyny do pisania dla każdego quote-box
+    function typeWriterElement(el, text, delay = 50) {
+        el.textContent = "";
+        let index = 0;
+        function type() {
+            if (index < text.length) {
+                el.textContent += text.charAt(index);
+                index++;
+                setTimeout(type, delay);
+            }
+        }
+        type();
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+        const quoteBoxes = document.querySelectorAll(".quote-box");
+        quoteBoxes.forEach(box => {
+            const fullText = box.getAttribute("data-fulltext");
+            typeWriterElement(box, fullText, 50);
+        });
+    });
+
+    // Canvas z animacją Matrix
     const canvas = document.getElementById('matrixCanvas');
     const ctx = canvas.getContext('2d');
 
@@ -195,35 +188,32 @@
 
     const letters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const fontSize = 16;
-    const columns = canvas.width / fontSize;
-
+    let columns = Math.floor(canvas.width / fontSize);
     const drops = Array.from({ length: columns }).fill(1);
 
     function draw() {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-
         ctx.fillStyle = '#0F0';
         ctx.font = fontSize + 'px monospace';
-
-        drops.forEach((y, index) => {
+        for (let i = 0; i < drops.length; i++) {
             const text = letters[Math.floor(Math.random() * letters.length)];
-            const x = index * fontSize;
-            ctx.fillText(text, x, y * fontSize);
-
-            if (y * fontSize > canvas.height && Math.random() > 0.975) {
-                drops[index] = 0;
+            const x = i * fontSize;
+            const y = drops[i] * fontSize;
+            ctx.fillText(text, x, y);
+            if (y > canvas.height && Math.random() > 0.975) {
+                drops[i] = 0;
             }
-            drops[index]++;
-        });
+            drops[i]++;
+        }
     }
-
     setInterval(draw, 50);
 
     window.addEventListener('resize', () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        drops.length = canvas.width / fontSize;
+        columns = Math.floor(canvas.width / fontSize);
+        drops.length = columns;
         drops.fill(1);
     });
 </script>

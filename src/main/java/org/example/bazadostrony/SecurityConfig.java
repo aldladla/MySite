@@ -39,10 +39,10 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login")                    // Niestandardowy widok logowania
-                        .loginProcessingUrl("/login")           // Jawne ustawienie URL, który będzie przetwarzał logowanie
-                        .defaultSuccessUrl("/main", true)         // Po poprawnym logowaniu przekierowujemy do /main
-                        .failureUrl("/login?error=true")          // W przypadku błędnych danych pozostajemy na /login z parametrem error
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .defaultSuccessUrl("/main", true)
+                        .failureUrl("/login?error=true")
                         .permitAll()
                 )
                 .logout(logout -> logout.permitAll());

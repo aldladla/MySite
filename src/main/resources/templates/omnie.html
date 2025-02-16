@@ -25,10 +25,12 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: start;
             padding-top: 20px;
+            transition: all 0.3s ease;
             z-index: 100;
         }
+
+        /* Linki w navbarze */
         .navbar a {
             color: #fff;
             text-decoration: none;
@@ -36,16 +38,51 @@
             margin: 8px 0;
             width: 90%;
             text-align: center;
-            border-radius: 0px;
-            display: block;
             font-family: 'Press Start 2P', cursive;
             font-size: 12px;
-
+            transition: background 0.2s;
         }
+
+        /* Efekt hover */
         .navbar a:hover {
             background-color: #575757;
-            outline: 2px solid #0F0;
-            outline-offset: -2px;
+            box-shadow: 0 0 10px #0F0;
+        }
+
+        .hamburger {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 101;
+            cursor: pointer;
+        }
+
+        /* Style hamburger menu */
+        .hamburger div {
+            width: 30px;
+            height: 4px;
+            background-color: #fff;
+            margin: 6px 0;
+            transition: 0.4s;
+        }
+
+        /* Media query: przy ekranach mniejszych niż 768px */
+        @media (max-width: 768px) {
+            .navbar {
+                width: 100%;
+                height: auto;
+                flex-direction: row;
+                justify-content: space-around;
+                padding-top: 10px;
+            }
+            .navbar a {
+                font-size: 14px;
+                margin: 0;
+            }
+            .hamburger {
+                display: block;
+            }
         }
 
         h1{
