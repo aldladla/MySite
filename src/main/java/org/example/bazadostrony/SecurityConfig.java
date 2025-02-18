@@ -33,7 +33,7 @@ public class SecurityConfig {
         http.authenticationProvider(authenticationProvider());
 
         http
-                .csrf(csrf -> csrf.disable()) // Wyłączamy CSRF – dostosuj do swoich potrzeb
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/register", "/css/**", "/js/**", "/index.html", "/login").permitAll()
                         .anyRequest().authenticated()

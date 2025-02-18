@@ -1,18 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>Kontakt</title>
+    <title>O mnie - Interaktywne CV</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
-            font-family: 'Press Start 2P', cursive;
+            font-family: Arial, sans-serif;
             background-color: #000;
-            color: #fff;
-            overflow: hidden;
+            color: #0F0;
+            overflow-x: hidden;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
         }
 
         .navbar {
@@ -26,11 +35,8 @@
             flex-direction: column;
             align-items: center;
             padding-top: 20px;
-            transition: all 0.3s ease;
             z-index: 100;
         }
-
-        /* Linki w navbarze */
         .navbar a {
             color: #fff;
             text-decoration: none;
@@ -42,32 +48,153 @@
             font-size: 12px;
             transition: background 0.2s;
         }
-
-        /* Efekt hover */
         .navbar a:hover {
             background-color: #575757;
             box-shadow: 0 0 10px #0F0;
         }
 
-        .hamburger {
-            display: none;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 101;
-            cursor: pointer;
+        .intro {
+            margin: 80px auto 20px;
+            max-width: 700px;
+            text-align: center;
+            padding: 20px;
+            background: rgba(0,0,0,0.85);
+            border: 2px solid #0F0;
+            border-radius: 10px;
+            color: #0F0;
+            font-family: 'Lora', serif;
+        }
+        .intro h2 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .intro p {
+            font-size: 16px;
+            line-height: 1.5;
         }
 
-        /* Style hamburger menu */
-        .hamburger div {
-            width: 30px;
-            height: 4px;
-            background-color: #fff;
-            margin: 6px 0;
-            transition: 0.4s;
+        .personal-info {
+            margin: 20px auto;
+            max-width: 700px;
+            text-align: center;
+        }
+        .personal-info h1 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 28px;
+            margin: 10px 0;
+        }
+        .personal-info p {
+            font-size: 16px;
+            margin: 5px 0;
         }
 
-        /* Media query: przy ekranach mniejszych niż 768px */
+        #cv {
+            margin: 20px auto 40px;
+            max-width: 700px;
+            background-color: rgba(0,0,0,0.85);
+            border: 2px solid #0F0;
+            border-radius: 10px;
+            padding: 20px;
+            color: #0F0;
+        }
+        #cv h2 {
+            text-align: center;
+            font-family: 'Press Start 2P', cursive;
+            margin-bottom: 20px;
+        }
+        .cv-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .cv-card {
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #0F0;
+            border-radius: 10px;
+            padding: 15px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: cardFadeIn 0.6s forwards;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .cv-card:hover {
+            transform: translateY(0);
+            box-shadow: 0 5px 15px rgba(0,255,0,0.5);
+        }
+        .cv-card h3 {
+            margin: 0 0 10px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 18px;
+        }
+        .cv-card p {
+            margin: 5px 0;
+            font-family: 'Lora', serif;
+            font-size: 14px;
+        }
+        @keyframes cardFadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #skills {
+            margin: 20px auto 40px;
+            max-width: 700px;
+            background-color: rgba(0,0,0,0.85);
+            border: 2px solid #0F0;
+            border-radius: 10px;
+            padding: 20px;
+            color: #0F0;
+        }
+        #skills h2 {
+            text-align: center;
+            font-family: 'Press Start 2P', cursive;
+            margin-bottom: 20px;
+        }
+
+        .skill {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .skill-label {
+            width: 150px;
+            text-align: right;
+            margin-right: 15px;
+            font-size: 16px;
+            font-family: 'Press Start 2P', cursive;
+        }
+        .skill-rating {
+            display: flex;
+            gap: 5px;
+        }
+        .dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid #0F0;
+            background: transparent;
+        }
+        .dot.filled {
+            background: #0F0;
+        }
+
+        #skills ul {
+            list-style: none;
+            padding: 0;
+        }
+        #skills li::before {
+            content: "•";
+            position: absolute;
+            left: 30px;
+            top: 0;
+            color: #0F0;
+            font-size: 20px;
+            line-height: 1;
+        }
+        /* Media Queries */
         @media (max-width: 768px) {
             .navbar {
                 width: 100%;
@@ -80,19 +207,15 @@
                 font-size: 14px;
                 margin: 0;
             }
-            .hamburger {
-                display: block;
+            .intro, .personal-info, #cv, #skills {
+                margin: 20px 10px;
             }
-        }
-
-        h1{
-            text-align: center;
-            padding: 20px;
-            margin-right: 220px;
         }
     </style>
 </head>
 <body>
+<canvas id="matrixCanvas"></canvas>
+
 <div class="navbar">
     <a href="/main">Strona główna</a>
     <a href="/projekty">Projekty</a>
@@ -100,7 +223,175 @@
     <a href="/kontakt">Kontakt</a>
 </div>
 
-<h1>Kontakt</h1>
-<p style="text-align: center;">Szukam weny zeby cos tutaj dodac :) // Under maintaince</p>
+<section class="intro">
+    <h2>Witaj!</h2>
+    <p>
+        Ta strona została stworzona przeze mnie, Aleksandra Kostkę, aby zaprezentować moje umiejętności oraz doświadczenie w branży IT.
+        Jako student informatyki i programista z pierwszym doświadczeniem zawodowym, ciągle rozwijam swoje kompetencje.
+        Zapraszam do zapoznania się z moim interaktywnym CV.
+    </p>
+</section>
+
+<section class="personal-info">
+    <h1>Aleksander Kostka</h1>
+    <p>Warszawa</p>
+    <p>E-mail: Olek.kostka03@gmail.com</p>
+    <p>Telefon: 536913809</p>
+</section>
+
+<section id="cv">
+    <h2>O mnie</h2>
+    <div class="cv-grid">
+        <div class="cv-card">
+            <h3>Edukacja</h3>
+            <p><strong>INFORMATYKA (2023-2024)</strong></p>
+            <p>Polsko-Japońska Akademia Technik Komputerowych</p>
+        </div>
+        <div class="cv-card">
+            <h3>Doświadczenie</h3>
+            <p><strong>Programista - Alliance Technology Polska</strong></p>
+            <p>Praca nad aplikacją dla Toyoty z wykorzystaniem API i frameworka Spring. Integracja z systemami zewnętrznymi.</p>
+        </div>
+        <div class="cv-card">
+            <h3>Projekty</h3>
+            <p><strong>Własna gra i baza danych</strong></p>
+            <p>Opracowanie gry komputerowej oraz stworzenie bazy danych symulującej działanie firmy.</p>
+        </div>
+        <div class="cv-card">
+            <h3>Erasmus+</h3>
+            <p>Wymiana studencka w Niemczech, rozwój umiejętności językowych i międzykulturowych.</p>
+        </div>
+        <div class="cv-card">
+            <h3>Wolontariat</h3>
+            <p><strong>Federacja Polskich Banków Żywności</strong></p>
+            <p>Organizacja zbiórek żywności oraz pomoc w dystrybucji.</p>
+            <p><strong>Polskie Stowarzyszenie na rzecz Osób z Niepełnosprawnością Intelektualną</strong></p>
+            <p>Wsparcie w organizacji zajęć i wydarzeń.</p>
+        </div>
+    </div>
+</section>
+
+<section id="skills">
+    <h2>Umiejętności</h2>
+    <div class="skill">
+        <span class="skill-label">Java</span>
+        <div class="skill-rating">
+            <span class="dot filled"></span>
+            <span class="dot filled"></span>
+            <span class="dot filled"></span>
+            <span class="dot filled"></span>
+            <span class="dot "></span>
+        </div>
+    </div>
+    <div class="skill">
+        <span class="skill-label">Spring Boot</span>
+        <div class="skill-rating">
+            <span class="dot filled"></span>
+            <span class="dot filled"></span>
+            <span class="dot filled"></span>
+            <span class="dot "></span>
+            <span class="dot"></span>
+        </div>
+    </div>
+    <div class="skill">
+        <span class="skill-label">SQL</span>
+        <div class="skill-rating">
+            <span class="dot filled"></span>
+            <span class="dot filled"></span>
+            <span class="dot filled"></span>
+            <span class="dot "></span>
+            <span class="dot"></span>
+        </div>
+    </div>
+    <div class="skill">
+        <span class="skill-label">C++</span>
+        <div class="skill-rating">
+            <span class="dot filled"></span>
+            <span class="dot filled"></span>
+            <span class="dot "></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+    </div>
+    <div class="skill">
+        <span class="skill-label">Excel</span>
+        <div class="skill-rating">
+            <span class="dot filled"></span>
+            <span class="dot filled"></span>
+            <span class="dot filled"></span>
+            <span class="dot filled"></span>
+            <span class="dot"></span>
+        </div>
+    </div>
+    <div class="skill">
+        <span class="skill-label">Jira</span>
+        <div class="skill-rating">
+            <span class="dot filled"></span>
+            <span class="dot filled"></span>
+            <span class="dot filled"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+    </div>
+    <div class="skill">
+        <span class="skill-label">Linux</span>
+        <div class="skill-rating">
+            <span class="dot filled"></span>
+            <span class="dot filled"></span>
+            <span class="dot "></span>
+            <span class="dot "></span>
+            <span class="dot"></span>
+        </div>
+    </div>
+    <div class="skill">
+        <span class="skill-label">Html</span>
+        <div class="skill-rating">
+            <span class="dot filled"></span>
+            <span class="dot filled"></span>
+            <span class="dot "></span>
+            <span class="dot "></span>
+            <span class="dot "></span>
+        </div>
+    </div>
+    <h2>Języki</h2>
+    <ul>
+        <li>Angielski – C1 (Certyfikat British Council)</li>
+    </ul>
+</section>
+
+<script>
+    const canvas = document.getElementById('matrixCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const letters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const fontSize = 16;
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops = Array.from({length: columns}).fill(1);
+    function draw() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#0F0';
+        ctx.font = fontSize + 'px monospace';
+        for (let i = 0; i < drops.length; i++) {
+            const text = letters[Math.floor(Math.random() * letters.length)];
+            const x = i * fontSize;
+            const y = drops[i] * fontSize;
+            ctx.fillText(text, x, y);
+            if (y > canvas.height && Math.random() > 0.975) {
+                drops[i] = 0;
+            }
+            drops[i]++;
+        }
+    }
+    setInterval(draw, 50);
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const cols = Math.floor(canvas.width / fontSize);
+        drops.length = cols;
+        drops.fill(1);
+    });
+</script>
 </body>
 </html>

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Strona główna</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap" rel="stylesheet">
@@ -14,7 +14,6 @@
             color: #fff;
             overflow-x: hidden;
         }
-        /* Tło Matrix */
         canvas {
             position: fixed;
             top: 0;
@@ -52,7 +51,6 @@
             background-color: #575757;
             box-shadow: 0 0 10px #0F0;
         }
-        /* Nagłówek z efektem maszyny do pisania */
         h1 {
             background-color: #333;
             padding: 25px;
@@ -63,7 +61,6 @@
             margin-left: 20px;
             margin-top: 20px;
         }
-        /* Kontener główny dla sekcji (zdjęcie + cytat) */
         .content-container {
             margin: 20px 220px 20px 20px;
             max-width: 1100px;
@@ -71,10 +68,10 @@
             flex-direction: column;
             gap: 30px;
         }
-        /* Każda sekcja (zdjęcie + cytat) */
         .section {
             display: flex;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;  /* Zapobiega automatycznemu zawijaniu */
+            align-items: flex-start;
             background-color: rgba(0, 0, 0, 0.8);
             border: 2px solid #0F0;
             border-radius: 10px;
@@ -96,15 +93,34 @@
             object-fit: cover;
             border-radius: 10px;
         }
-        /* Cytat – teraz będzie animowany efekt typewriter */
+        /* Cytat */
         .quote-box {
             flex: 1 1 auto;
+            min-width: 250px; /* Zapewnia wystarczającą szerokość dla tekstu */
             font-family: 'Lora', serif;
             font-size: 15px;
             color: #fff;
-            /* Na początku ukryjemy tekst, a następnie go wypełnimy animacją */
             overflow: hidden;
             white-space: pre-wrap;
+        }
+        @media (max-width: 768px) {
+            .navbar {
+                width: 100%;
+                height: auto;
+                flex-direction: row;
+                justify-content: space-around;
+                padding-top: 10px;
+            }
+            .navbar a {
+                font-size: 14px;
+                margin: 0;
+            }
+            .content-container {
+                margin: 20px 10px;
+            }
+            .section {
+                flex-wrap: wrap; /* Na mniejszych ekranach pozwalamy zawijanie */
+            }
         }
     </style>
 </head>
@@ -118,28 +134,34 @@
     <a href="/kontakt">Kontakt</a>
 </div>
 
-<!-- Nagłówek z efektem maszyny do pisania -->
 <h1 id="typewriter"></h1>
 
-<!-- Główny kontener na sekcje (zdjęcie + cytat) -->
 <div class="content-container">
-    <!-- Sekcja 1: Emerson -->
+    <!-- Sekcja Emerson -->
     <div class="section">
         <div class="photo-box">
             <img src="/RalphEmerson.jpeg" alt="Ralph Waldo Emerson">
         </div>
         <div class="quote-box" data-fulltext="&quot;Our greatest glory is not in never falling, but in rising every time we fall.&quot;
 - Ralph Waldo Emerson">
-            <!-- Pusta zawartość, która zostanie uzupełniona efektem typewriter -->
         </div>
     </div>
-    <!-- Sekcja 2: Nietzsche -->
+    <!-- Sekcja Nietzsche -->
     <div class="section">
         <div class="photo-box">
             <img src="/Nietzsche.jpg" alt="Friedrich Nietzsche">
         </div>
         <div class="quote-box" data-fulltext="&quot;Sometimes people don't want to hear the truth because they don't want their illusions destroyed.&quot;
 - Friedrich Nietzsche">
+        </div>
+    </div>
+    <!-- Sekcja Michelangelo -->
+    <div class="section">
+        <div class="photo-box">
+            <img src="/Michelangelo.webp" alt="Michelangelo">
+        </div>
+        <div class="quote-box" data-fulltext="&quot;The greatest danger for most of us is not that our aim is too high and we miss it, but that it is too low and we reach it.&quot;
+- Michelangelo">
         </div>
     </div>
 </div>
@@ -158,7 +180,7 @@
     }
     window.onload = typeWriterHeader;
 
-    // Efekt maszyny do pisania dla każdego quote-box
+    // Efekt maszynki do pisania dla cytatów
     function typeWriterElement(el, text, delay = 50) {
         el.textContent = "";
         let index = 0;
@@ -182,15 +204,12 @@
     // Canvas z animacją Matrix
     const canvas = document.getElementById('matrixCanvas');
     const ctx = canvas.getContext('2d');
-
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
     const letters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const fontSize = 16;
     let columns = Math.floor(canvas.width / fontSize);
     const drops = Array.from({ length: columns }).fill(1);
-
     function draw() {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -208,7 +227,6 @@
         }
     }
     setInterval(draw, 50);
-
     window.addEventListener('resize', () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;

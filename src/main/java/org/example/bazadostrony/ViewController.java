@@ -7,18 +7,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class ViewController {
     @GetMapping("/main")
     public String mainPage() {
-        return "main"; // main.html w src/main/resources/templates/
+        return "main";
     }
 
     @GetMapping("/kontakt")
     public String contactPage() {
-        return "kontakt"; // src/main/resources/templates/kontakt.html
+        return "kontakt";
     }
 
-    @GetMapping("/projekty")
+    /*@GetMapping("/projekty")
     public String projectsPage() {
-        return "projects"; // src/main/resources/templates/projects.html
-    }
+        return "projects";
+    }*/ /*znajduje sie w CryptoController */
 
     @GetMapping("/omnie")
     public String oMniePage() {

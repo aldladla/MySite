@@ -1,6 +1,8 @@
 package org.example.bazadostrony;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,21 +19,18 @@ public class RegistrationController {
     private BCryptPasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
-    public String processRegistration(@RequestParam("username") String username,
-                                      @RequestParam("password") String password,
-                                      Model model) {
+    public ResponseEntity<String> processRegistration(@RequestParam("username") String username,
+                                                      @RequestParam("password") String password) {
         if (userRepository.findByUsername(username) != null) {
-            // Ustaw atrybuty modelu, aby wyświetlić komunikat oraz formularz rejestracji
-            model.addAttribute("regError", "Użytkownik o takiej nazwie już istnieje!");
-            model.addAttribute("showRegister", true);
-            return "login"; // Zwracamy widok login (bez redirectu)
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Użytkownik o takiej nazwie już istnieje!");
         }
 
         String encodedPassword = passwordEncoder.encode(password);
         User user = new User(username, encodedPassword);
         userRepository.save(user);
 
-        // Jeśli rejestracja się powiedzie, możesz przekierować do strony logowania
-        return "redirect:/login?regSuccess=true";
+        return ResponseEntity.ok("Rejestracja przebiegła pomyślnie. Możesz się zalogować.");
     }
 }
