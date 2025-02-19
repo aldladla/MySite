@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
@@ -15,6 +15,7 @@
             background-color: #000;
             color: #fff;
             overflow-y: auto;
+            text-align: center; /* Wyśrodkowanie domyślne */
         }
         canvas#matrixCanvas {
             position: fixed;
@@ -111,6 +112,36 @@
             max-width: 100%;
             height: auto;
         }
+        /* Sekcja NASA APOD */
+        .apod-section {
+            background-color: #222;
+            padding: 20px;
+            border: 2px solid #0F0;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 900px;
+            text-align: center;
+        }
+        /* Kontener mediów – wyśrodkowanie zawartości */
+        #media-container {
+            text-align: center;
+        }
+        /* Ustalony rozmiar obrazu lub video oraz wyśrodkowanie */
+        #apod-image, #apod-video {
+            display: block;
+            margin: 20px auto;
+            width: 600px;
+            height: 400px;
+            object-fit: cover;
+            border: 3px solid #0F0;
+            border-radius: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
         @media (max-width: 768px) {
             .navbar {
                 width: 100%;
@@ -155,8 +186,74 @@
     <canvas id="ethereumChart"></canvas>
 </div>
 
+<!-- Sekcja NASA APOD -->
+<div class="apod-section" th:if="${apod != null}">
+    <h2>Astronomy Picture of the Day</h2>
+    <h3 id="apod-title" th:text="${apod.title}">Tytuł obrazu</h3>
+    <p id="apod-date" th:text="${apod.date}">Data obrazu</p>
+    <div id="media-container">
+        <div th:if="${apod.media_type == 'video'}">
+            <iframe id="apod-video" th:src="${apod.url}" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <div th:if="${apod.media_type != 'video'}">
+            <img id="apod-image" th:src="${apod.url}" alt="APOD Image">
+        </div>
+    </div>
+    <p id="apod-explanation" th:text="${apod.explanation}">Opis obrazu...</p>
+    <button onclick="loadNewApod()">Pokaż nowe zdjęcie</button>
+</div>
+<div th:if="${apod == null}">
+    <p>Nie udało się pobrać danych z NASA APOD API.</p>
+</div>
+
 <script>
-    // Funkcja do pobierania danych historycznych dla danej kryptowaluty
+    function loadNewApod() {
+        // Dodajemy parametr timestamp, aby ominąć cache
+        fetch('/apod-json?t=' + new Date().getTime())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Błąd sieci: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById("apod-title").innerText = data.title;
+                document.getElementById("apod-date").innerText = data.date;
+                document.getElementById("apod-explanation").innerText = data.explanation;
+
+                const mediaContainer = document.getElementById("media-container");
+                mediaContainer.innerHTML = "";
+
+                if (data.media_type === "video") {
+                    let iframe = document.createElement("iframe");
+                    iframe.id = "apod-video";
+                    iframe.src = data.url;
+                    iframe.setAttribute("frameborder", "0");
+                    iframe.setAttribute("allowfullscreen", "true");
+                    iframe.style.width = "600px";
+                    iframe.style.height = "400px";
+                    iframe.style.display = "block";
+                    iframe.style.margin = "20px auto";
+                    mediaContainer.appendChild(iframe);
+                } else {
+                    let img = document.createElement("img");
+                    img.id = "apod-image";
+                    img.src = data.url;
+                    img.alt = "APOD Image";
+                    img.style.width = "600px";
+                    img.style.height = "400px";
+                    img.style.objectFit = "cover";
+                    img.style.display = "block";
+                    img.style.margin = "20px auto";
+                    mediaContainer.appendChild(img);
+                }
+            })
+            .catch(error => {
+                console.error('Błąd podczas pobierania nowego obrazu:', error);
+            });
+    }
+
+    // Funkcja do pobierania danych historycznych dla kryptowalut (Crypto)
     async function fetchHistoricalData(coinId) {
         const url = `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=30`;
         const response = await fetch(url);
@@ -164,11 +261,9 @@
     }
 
     async function renderCharts() {
-        // Pobieramy dane dla Bitcoina i Ethereum
         const bitcoinData = await fetchHistoricalData('bitcoin');
         const ethereumData = await fetchHistoricalData('ethereum');
 
-        // Przetwarzamy dane – CoinGecko zwraca tablicę [timestamp, price]
         const processData = data => {
             const labels = [];
             const prices = [];
@@ -190,16 +285,13 @@
         const bitcoinProcessed = processData(bitcoinData);
         const ethereumProcessed = processData(ethereumData);
 
-        // Inicjalizacja wykresów Chart.js
         const ctxBitcoin = document.getElementById('bitcoinChart').getContext('2d');
         const ctxEthereum = document.getElementById('ethereumChart').getContext('2d');
 
-        // Gradient dla Bitcoin
         const gradientBitcoin = ctxBitcoin.createLinearGradient(0, 0, 0, 400);
         gradientBitcoin.addColorStop(0, 'rgba(0,255,0,0.5)');
         gradientBitcoin.addColorStop(1, 'rgba(0,255,0,0.1)');
 
-        // Gradient dla Ethereum
         const gradientEthereum = ctxEthereum.createLinearGradient(0, 0, 0, 400);
         gradientEthereum.addColorStop(0, 'rgba(0,255,0,0.5)');
         gradientEthereum.addColorStop(1, 'rgba(0,255,0,0.1)');
@@ -239,7 +331,6 @@
                         grid: { color: 'rgba(15,255,15,0.1)' }
                     }
                 }
-                // Usunięto sekcję animacji
             }
         });
 
@@ -278,7 +369,6 @@
                         grid: { color: 'rgba(15,255,15,0.1)' }
                     }
                 }
-                // Usunięto sekcję animacji
             }
         });
     }
@@ -286,25 +376,25 @@
     document.addEventListener("DOMContentLoaded", renderCharts);
 
     // Canvas z animacją Matrix
-    const canvas = document.getElementById('matrixCanvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    const matrixCanvas = document.getElementById('matrixCanvas');
+    const matrixCtx = matrixCanvas.getContext('2d');
+    matrixCanvas.width = window.innerWidth;
+    matrixCanvas.height = window.innerHeight;
     const letters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const fontSize = 16;
-    let columns = Math.floor(canvas.width / fontSize);
+    let columns = Math.floor(matrixCanvas.width / fontSize);
     const drops = Array.from({ length: columns }).fill(1);
     function draw() {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#0F0';
-        ctx.font = fontSize + 'px monospace';
+        matrixCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+        matrixCtx.fillStyle = '#0F0';
+        matrixCtx.font = fontSize + 'px monospace';
         for (let i = 0; i < drops.length; i++) {
             const text = letters[Math.floor(Math.random() * letters.length)];
             const x = i * fontSize;
             const y = drops[i] * fontSize;
-            ctx.fillText(text, x, y);
-            if (y > canvas.height && Math.random() > 0.975) {
+            matrixCtx.fillText(text, x, y);
+            if (y > matrixCanvas.height && Math.random() > 0.975) {
                 drops[i] = 0;
             }
             drops[i]++;
@@ -312,9 +402,9 @@
     }
     setInterval(draw, 50);
     window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        columns = Math.floor(canvas.width / fontSize);
+        matrixCanvas.width = window.innerWidth;
+        matrixCanvas.height = window.innerHeight;
+        columns = Math.floor(matrixCanvas.width / fontSize);
         drops.length = columns;
         drops.fill(1);
     });

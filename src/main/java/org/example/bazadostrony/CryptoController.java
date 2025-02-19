@@ -14,12 +14,24 @@ import java.util.Map;
 public class CryptoController {
 
     private final RestTemplate restTemplate = new RestTemplate();
+    // Klucz API NASA – zamień na swój, jeśli to konieczne
+    private final String nasaApiKey = "Sj35BMURZdbMbIJ8tbZdCinL2PCOQGnKqyeaDppk";
 
-    // Endpoint zwracający widok "projects" – można zmapować go na /projekty, jeśli chcesz
+    // Endpoint zwracający widok "projects" (pod /projekty) wraz z losowym zdjęciem NASA APOD
     @GetMapping("/projekty")
     public String projectsPage(Model model) {
-        // Możesz dodać inne atrybuty do modelu, jeśli potrzebujesz
-        return "projects"; // Szablon projects.html w katalogu templates
+        // Pobierz losowe dane NASA APOD, używając parametru count=1
+        String nasaUrl = "https://api.nasa.gov/planetary/apod?api_key=" + nasaApiKey + "&count=1";
+        Apod[] apods = restTemplate.getForObject(nasaUrl, Apod[].class);
+        Apod apod = (apods != null && apods.length > 0) ? apods[0] : null;
+        if (apod == null) {
+            System.err.println("Otrzymano null z NASA APOD API!");
+        } else {
+            System.out.println("Otrzymano losowy tytuł APOD: " + apod.getTitle());
+        }
+        model.addAttribute("apod", apod);
+        // Możesz dodać inne atrybuty do modelu, np. dane kryptowalut, jeśli chcesz
+        return "projects"; // Widok projects.html w katalogu templates
     }
 
     // Endpoint zwracający dane kryptowalut jako JSON
