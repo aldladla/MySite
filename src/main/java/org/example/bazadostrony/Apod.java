@@ -13,5 +13,5 @@ public class Apod {
     private String url;
     private String hdurl;
     private String title;
-    private String media_type; // Dodane pole do rozróżnienia, czy to obraz, czy video
+    private String media_type;
 }

@@ -13,25 +13,17 @@ public class ApodController {
     private final RestTemplate restTemplate = new RestTemplate();
     private final String apiKey = "Sj35BMURZdbMbIJ8tbZdCinL2PCOQGnKqyeaDppk";
 
-    // Endpoint renderujący widok pod /projects
     @GetMapping("/apod")
     public String getApod(Model model) {
         String url = "https://api.nasa.gov/planetary/apod?api_key=" + apiKey;
-        // Opcjonalnie możesz wydrukować surową odpowiedź do debugowania
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         System.out.println("Surowa odpowiedź: " + response.getBody());
 
         Apod apod = restTemplate.getForObject(url, Apod.class);
-        if (apod == null) {
-            System.err.println("Otrzymano null z NASA APOD API!");
-        } else {
-            System.out.println("Otrzymano tytuł: " + apod.getTitle());
-        }
         model.addAttribute("apod", apod);
         return "projects";
     }
 
-    // Endpoint zwracający losowy obraz jako JSON (do AJAX)
     @GetMapping("/apod-json")
     @ResponseBody
     public Apod getRandomApodJson() {
